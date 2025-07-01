@@ -34,9 +34,11 @@ export default function RootLayout({
           <SidebarProvider>
             <div className="flex h-screen bg-slate-900 text-white overflow-hidden">
               <SharedSidebar />
-              <div className="flex-1 flex flex-col min-w-0">
+              <div className="flex-1 flex flex-col min-w-0 w-full md:w-auto">
                 <HeaderNavigation />
-                {children}
+                <main className="flex-1 overflow-y-auto">
+                  {children}
+                </main>
               </div>
             </div>
             <AudioPlayer />

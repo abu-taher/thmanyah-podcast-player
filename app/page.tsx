@@ -69,8 +69,9 @@ export default function Home() {
   
   const router = useRouter();
   
-  // Ref for the scrollable podcast container
+  // Refs for the scrollable containers
   const podcastScrollRef = useRef<HTMLDivElement>(null);
+  const episodeScrollRef = useRef<HTMLDivElement>(null);
 
   // Function to perform search using the API
   const performSearch = useCallback(async (searchQuery: string) => {
@@ -173,6 +174,28 @@ export default function Home() {
     }
   };
 
+  // Function to scroll episodes left
+  const scrollEpisodesLeft = () => {
+    if (episodeScrollRef.current) {
+      const scrollAmount = window.innerWidth; // Scroll by full viewport width
+      episodeScrollRef.current.scrollBy({
+        left: -scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Function to scroll episodes right
+  const scrollEpisodesRight = () => {
+    if (episodeScrollRef.current) {
+      const scrollAmount = window.innerWidth; // Scroll by full viewport width
+      episodeScrollRef.current.scrollBy({
+        left: scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   // Fetch initial data on page load
   useEffect(() => {
     performSearch('فنجان'); // Load initial content
@@ -193,7 +216,7 @@ export default function Home() {
   return (
     <>
       {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto px-6 py-6">
+      <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4 md:py-6 custom-scrollbar mobile-scroll">
         {/* Top Podcasts Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
@@ -260,6 +283,20 @@ export default function Home() {
         <div className="flex-1 flex flex-col">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">Top episodes for {currentSearchTerm}</h2>
+            <div className="flex items-center space-x-2 lg:hidden">
+              <button 
+                className="p-2 rounded-full hover:bg-slate-700 transition-colors"
+                onClick={scrollEpisodesLeft}
+              >
+                <ChevronLeftIcon className="w-4 h-4" />
+              </button>
+              <button 
+                className="p-2 rounded-full hover:bg-slate-700 transition-colors"
+                onClick={scrollEpisodesRight}
+              >
+                <ChevronRightIcon className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {episodesLoading ? (
@@ -267,36 +304,90 @@ export default function Home() {
               <Logo width={64} height={70} animated={true} />
             </div>
           ) : episodes.length > 0 ? (
-            <div className="flex gap-6 flex-1">
-              {/* Left Column */}
-              <div className="flex-1 space-y-3">
-                {episodes.slice(0, 4).map((episode) => (
-                  <div key={episode.trackId} className="group flex items-center space-x-4 p-3 rounded-lg bg-slate-800/30 hover:bg-slate-800/50 cursor-pointer transition-colors" onClick={() => handleEpisodeClick(episode)}>
-                    <div className="relative">
+            <>
+              {/* Mobile horizontal scroll layout */}
+              <div className="lg:hidden">
+                <div className="relative">
+                  <div ref={episodeScrollRef} className="overflow-x-auto scrollbar-hide">
+                    <div className="flex pb-4" style={{ width: 'max-content' }}>
+                      {Array.from({ length: Math.ceil(episodes.length / 4) }, (_, columnIndex) => (
+                        <div key={columnIndex} className="flex-shrink-0 w-full space-y-3 pr-6" style={{ width: '100vw', paddingRight: '24px' }}>
+                          {episodes.slice(columnIndex * 4, (columnIndex + 1) * 4).map((episode) => (
+                            <div 
+                              key={episode.trackId} 
+                              className="group cursor-pointer bg-slate-800/30 hover:bg-slate-800/50 rounded-lg p-4 transition-colors"
+                              onClick={() => handleEpisodeClick(episode)}
+                            >
+                              <div className="flex items-center space-x-3">
+                                <div className="relative">
+                                  <Image
+                                    src={episode.artworkUrl600 || episode.artworkUrl100 || episode.artworkUrl60 || 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=100&h=100&fit=crop&crop=center'}
+                                    alt={episode.trackName}
+                                    width={56}
+                                    height={56}
+                                    className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
+                                  />
+                                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                                    {episode.previewUrl ? (
+                                      <PlayIcon className="w-4 h-4 text-white" />
+                                    ) : (
+                                      <div className="w-4 h-4 text-slate-400 text-xs flex items-center justify-center">🚫</div>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h3 className="font-semibold text-white text-sm mb-1 leading-tight line-clamp-2">{episode.trackName}</h3>
+                                  <p className="text-xs text-slate-400 truncate">{episode.collectionName}</p>
+                                  <p className="text-xs text-slate-500 truncate">{episode.artistName}</p>
+                                  <div className="flex items-center justify-between mt-1">
+                                    <span className="text-xs text-slate-400">{formatDuration(episode.trackTimeMillis)}</span>
+                                    {!episode.previewUrl && (
+                                      <span className="text-xs text-red-400">No audio</span>
+                                    )}
+                                  </div>
+                                </div>
+                                <button className="p-1 rounded-full hover:bg-slate-700 transition-colors flex-shrink-0">
+                                  <EllipsisHorizontalIcon className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Desktop responsive grid layout */}
+              <div className="hidden lg:grid gap-4 xl:gap-6 flex-1 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+                {episodes.slice(0, 12).map((episode) => (
+                  <div key={episode.trackId} className="group flex items-center space-x-3 lg:space-x-4 p-3 rounded-lg bg-slate-800/30 hover:bg-slate-800/50 cursor-pointer transition-colors" onClick={() => handleEpisodeClick(episode)}>
+                    <div className="relative flex-shrink-0">
                       <Image
                         src={episode.artworkUrl600 || episode.artworkUrl100 || episode.artworkUrl60 || 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=100&h=100&fit=crop&crop=center'}
                         alt={episode.trackName}
                         width={48}
                         height={48}
-                        className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                        className="w-12 h-12 rounded-lg object-cover"
                       />
                       <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                         {episode.previewUrl ? (
                           <PlayIcon className="w-4 h-4 text-white" />
                         ) : (
-                          <div className="w-4 h-4 text-slate-400 text-xs">🚫</div>
+                          <div className="w-4 h-4 text-slate-400 text-xs flex items-center justify-center">🚫</div>
                         )}
                       </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-white truncate text-sm">{episode.trackName}</h3>
+                    <div className="flex-1 min-w-0 overflow-hidden">
+                      <h3 className="font-semibold text-white truncate text-sm leading-tight">{episode.trackName}</h3>
                       <p className="text-xs text-slate-400 truncate">{episode.collectionName}</p>
                       <p className="text-xs text-slate-500 truncate">{episode.artistName}</p>
                       {!episode.previewUrl && (
                         <p className="text-xs text-red-400">No audio available</p>
                       )}
                     </div>
-                    <div className="flex items-center space-x-3 flex-shrink-0">
+                    <div className="flex flex-col items-end space-y-1 flex-shrink-0">
                       <span className="text-xs text-slate-400">{formatDuration(episode.trackTimeMillis)}</span>
                       <button className="p-1 rounded-full hover:bg-slate-700 transition-colors">
                         <EllipsisHorizontalIcon className="w-4 h-4" />
@@ -305,83 +396,7 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-
-              {/* Middle Column */}
-              <div className="flex-1 space-y-3">
-                {episodes.slice(4, 8).map((episode) => (
-                  <div key={episode.trackId} className="group flex items-center space-x-4 p-3 rounded-lg bg-slate-800/30 hover:bg-slate-800/50 cursor-pointer transition-colors" onClick={() => handleEpisodeClick(episode)}>
-                    <div className="relative">
-                      <Image
-                        src={episode.artworkUrl600 || episode.artworkUrl100 || episode.artworkUrl60 || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=100&fit=crop&crop=center'}
-                        alt={episode.trackName}
-                        width={48}
-                        height={48}
-                        className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
-                      />
-                      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                        {episode.previewUrl ? (
-                          <PlayIcon className="w-4 h-4 text-white" />
-                        ) : (
-                          <div className="w-4 h-4 text-slate-400 text-xs">🚫</div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-white truncate text-sm">{episode.trackName}</h3>
-                      <p className="text-xs text-slate-400 truncate">{episode.collectionName}</p>
-                      <p className="text-xs text-slate-500 truncate">{episode.artistName}</p>
-                      {!episode.previewUrl && (
-                        <p className="text-xs text-red-400">No audio available</p>
-                      )}
-                    </div>
-                    <div className="flex items-center space-x-3 flex-shrink-0">
-                      <span className="text-xs text-slate-400">{formatDuration(episode.trackTimeMillis)}</span>
-                      <button className="p-1 rounded-full hover:bg-slate-700 transition-colors">
-                        <EllipsisHorizontalIcon className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Right Column */}
-              <div className="flex-1 space-y-3">
-                {episodes.slice(8, 12).map((episode) => (
-                  <div key={episode.trackId} className="group flex items-center space-x-4 p-3 rounded-lg bg-slate-800/30 hover:bg-slate-800/50 cursor-pointer transition-colors" onClick={() => handleEpisodeClick(episode)}>
-                    <div className="relative">
-                      <Image
-                        src={episode.artworkUrl600 || episode.artworkUrl100 || episode.artworkUrl60 || 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&h=100&fit=crop&crop=center'}
-                        alt={episode.trackName}
-                        width={48}
-                        height={48}
-                        className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
-                      />
-                      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                        {episode.previewUrl ? (
-                          <PlayIcon className="w-4 h-4 text-white" />
-                        ) : (
-                          <div className="w-4 h-4 text-slate-400 text-xs">🚫</div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-white truncate text-sm">{episode.trackName}</h3>
-                      <p className="text-xs text-slate-400 truncate">{episode.collectionName}</p>
-                      <p className="text-xs text-slate-500 truncate">{episode.artistName}</p>
-                      {!episode.previewUrl && (
-                        <p className="text-xs text-red-400">No audio available</p>
-                      )}
-                    </div>
-                    <div className="flex items-center space-x-3 flex-shrink-0">
-                      <span className="text-xs text-slate-400">{formatDuration(episode.trackTimeMillis)}</span>
-                      <button className="p-1 rounded-full hover:bg-slate-700 transition-colors">
-                        <EllipsisHorizontalIcon className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            </>
           ) : (
             <div className="flex items-center justify-center py-20">
               <div className="text-xl text-slate-400">No episodes found</div>
