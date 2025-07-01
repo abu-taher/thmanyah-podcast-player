@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AudioProvider } from "../lib/audio-context";
 import AudioPlayer from "../lib/audio-player";
+import { SidebarProvider, SharedSidebar, HeaderNavigation } from "../lib/sidebar-context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,8 +31,16 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AudioProvider>
-          {children}
-          <AudioPlayer />
+          <SidebarProvider>
+            <div className="flex h-screen bg-slate-900 text-white overflow-hidden">
+              <SharedSidebar />
+              <div className="flex-1 flex flex-col min-w-0">
+                <HeaderNavigation />
+                {children}
+              </div>
+            </div>
+            <AudioPlayer />
+          </SidebarProvider>
         </AudioProvider>
       </body>
     </html>
