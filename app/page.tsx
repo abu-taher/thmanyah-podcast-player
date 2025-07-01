@@ -136,13 +136,20 @@ export default function Home() {
 
   // Configure header on mount and when search term changes
   useEffect(() => {
+    const handleBackClick = () => {
+      // Clear search and return to default content
+      setSearchTerm('');
+      performSearch('فنجان'); // Reset to default content
+    };
+
     setHeaderConfig({
       searchPlaceholder: "Search through over 70 million podcasts and episodes...",
       searchValue: searchTerm,
       onSearchChange: setSearchTerm,
       onSearchKeyPress: handleSearchKeyPress,
+      onBackClick: searchTerm ? handleBackClick : undefined, // Only provide custom handler when there's a search
     });
-  }, [searchTerm, setHeaderConfig, handleSearchKeyPress]);
+  }, [searchTerm, setHeaderConfig, handleSearchKeyPress, performSearch]);
 
   // Function to scroll podcasts left
   const scrollPodcastsLeft = () => {

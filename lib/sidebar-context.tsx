@@ -54,6 +54,7 @@ interface HeaderConfig {
   onSearchKeyPress?: (e: React.KeyboardEvent) => void;
   episodeCount?: number;
   hideSearchBar?: boolean;
+  onBackClick?: () => void; // Custom back handler
 }
 
 interface SidebarContextType {
@@ -73,6 +74,7 @@ interface SidebarProviderProps {
 export function HeaderNavigation() {
   const { headerConfig } = useSidebar();
   const router = useRouter();
+  const pathname = usePathname();
   const [localSearchTerm, setLocalSearchTerm] = useState("");
 
   const {
@@ -81,7 +83,8 @@ export function HeaderNavigation() {
     onSearchChange,
     onSearchKeyPress,
     episodeCount,
-    hideSearchBar = false
+    hideSearchBar = false,
+    onBackClick
   } = headerConfig;
 
   const effectiveSearchValue = searchValue !== undefined ? searchValue : localSearchTerm;
@@ -91,11 +94,28 @@ export function HeaderNavigation() {
     ? `Search through ${episodeCount} episodes...`
     : searchPlaceholder;
 
+  const handleBackClick = () => {
+    if (onBackClick) {
+      // Use custom back handler if provided
+      onBackClick();
+    } else if (pathname === '/' && (searchValue || localSearchTerm)) {
+      // On home page with search active, clear search instead of going back
+      if (onSearchChange) {
+        onSearchChange('');
+      } else {
+        setLocalSearchTerm('');
+      }
+    } else {
+      // Default browser back behavior
+      router.back();
+    }
+  };
+
   return (
     <div className="flex items-center justify-between px-6 py-4 bg-slate-900/80 backdrop-blur-sm border-b border-slate-700">
       <div className="flex items-center space-x-3">
         <button 
-          onClick={() => router.back()}
+          onClick={handleBackClick}
           className="p-2 rounded-full bg-slate-800 hover:bg-slate-700 transition-colors"
         >
           <ChevronLeftIcon className="w-4 h-4" />
