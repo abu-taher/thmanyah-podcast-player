@@ -202,9 +202,6 @@ export default function Home() {
               >
                 <ChevronRightIcon className="w-4 h-4" />
               </button>
-              <button className="p-2 rounded-full hover:bg-slate-700 transition-colors">
-                <EllipsisHorizontalIcon className="w-4 h-4" />
-              </button>
             </div>
           </div>
 
@@ -252,9 +249,6 @@ export default function Home() {
         <div className="flex-1 flex flex-col">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">Top episodes for {currentSearchTerm}</h2>
-            <button className="p-2 rounded-full hover:bg-slate-700 transition-colors">
-              <EllipsisHorizontalIcon className="w-4 h-4" />
-            </button>
           </div>
 
           {episodesLoading ? (

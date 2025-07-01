@@ -29,12 +29,6 @@ const ChevronRightIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const EllipsisHorizontalIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
-  </svg>
-);
-
 const QueueListIcon = ({ className }: { className?: string }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
@@ -137,9 +131,7 @@ export function HeaderNavigation() {
         <button className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors text-sm">
           Sign up
         </button>
-        <button className="p-2 rounded-full hover:bg-slate-700 transition-colors">
-          <EllipsisHorizontalIcon className="w-4 h-4" />
-        </button>
+        
       </div>
     </div>
   );
