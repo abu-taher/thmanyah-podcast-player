@@ -23,13 +23,25 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       return;
     }
     
+    // Stop current audio if playing
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+      setCurrentTime(0);
+      setDuration(0);
+    }
+    
     setCurrentEpisode(episode);
     console.log('Selected episode:', episode.trackName);
     
-    // Automatically start playing the episode
+    // Automatically start playing the new episode
     // We need to wait a bit for the audio element to update with the new source
     setTimeout(() => {
       if (audioRef.current && episode.previewUrl) {
+        // Load the new source
+        audioRef.current.load();
+        
         audioRef.current.play()
           .then(() => {
             setIsPlaying(true);
@@ -142,6 +154,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     isMuted,
     audioRef,
     setCurrentEpisode,
+    setIsPlaying,
     togglePlayPause,
     skipBackward,
     skipForward,

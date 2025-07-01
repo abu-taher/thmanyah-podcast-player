@@ -12,6 +12,7 @@ export interface AudioContextType {
   
   // Audio controls
   setCurrentEpisode: (episode: Episode | null) => void;
+  setIsPlaying: (playing: boolean) => void;
   togglePlayPause: () => void;
   skipBackward: () => void;
   skipForward: () => void;

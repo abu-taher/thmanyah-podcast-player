@@ -23,6 +23,7 @@ export default function AudioPlayer() {
     isMuted,
     audioRef,
     setCurrentEpisode,
+    setIsPlaying,
     togglePlayPause,
     skipBackward,
     skipForward,
@@ -328,15 +329,15 @@ export default function AudioPlayer() {
       {/* Hidden Audio Element */}
       <audio 
         ref={audioRef}
+        src={currentEpisode?.previewUrl || ''}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onPlay={handlePlay}
         onPause={handlePause}
+        onEnded={() => setIsPlaying(false)}
         style={{ display: 'none' }}
+        preload="metadata"
       >
-        {currentEpisode?.previewUrl && (
-          <source src={currentEpisode.previewUrl} type="audio/mpeg" />
-        )}
         Your browser does not support the audio element.
       </audio>
     </div>
