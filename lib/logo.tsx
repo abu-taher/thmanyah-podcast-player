@@ -1,3 +1,7 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+
 interface LogoProps {
   width?: string | number;
   height?: string | number;
@@ -6,11 +10,21 @@ interface LogoProps {
 }
 
 export default function Logo({ width = "32", height = "35", className, animated = false }: LogoProps) {
+  const router = useRouter();
   const animationClass = animated ? "animate-spin" : "";
   const pulseClass = animated ? "animate-pulse" : "";
   
+  const handleClick = () => {
+    router.push('/');
+  };
+  
   return (
-    <div className={`${pulseClass} ${className}`}>
+    <div 
+      className={`${pulseClass} ${className} cursor-pointer transition-opacity hover:opacity-80`}
+      onClick={handleClick}
+      role="button"
+      aria-label="Go to homepage"
+    >
       <svg 
         width={width} 
         height={height} 
