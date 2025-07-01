@@ -58,8 +58,8 @@ const PlayIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-// Interface for iTunes API podcast data
-interface Podcast {
+// Type for iTunes API podcast data
+type Podcast = {
   trackId: number;
   trackName: string;
   artistName: string;
@@ -71,8 +71,8 @@ interface Podcast {
   trackCount?: number;
 }
 
-// Interface for episode data from iTunes API
-interface Episode {
+// Type for episode data from iTunes API
+type Episode = {
   trackId: number;
   trackName: string;
   collectionName: string;
@@ -267,7 +267,7 @@ export default function Home() {
         <div className="flex-1 overflow-y-auto px-8 py-6">
           {/* Top Podcasts Section */}
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold">Top podcasts for فنجان</h2>
               <div className="flex items-center space-x-2">
                 <button className="p-2 rounded-full hover:bg-slate-700 transition-colors">

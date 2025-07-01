@@ -16,7 +16,7 @@ const PlayIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-interface PodcastDetails {
+type PodcastDetails = {
   trackId: number;
   trackName: string;
   artistName: string;

@@ -6,14 +6,14 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // Database types for TypeScript
-export interface SearchRecord {
+export type SearchRecord = {
   id: string
   search_term: string
   result_count: number
   created_at: string
 }
 
-export interface PodcastRecord {
+export type PodcastRecord = {
   id: string
   search_id: string
   track_id: number

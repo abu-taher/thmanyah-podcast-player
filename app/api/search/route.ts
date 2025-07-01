@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-interface iTunesPodcast {
+type iTunesPodcast = {
   trackId: number;
   trackName?: string;
   collectionName?: string;
