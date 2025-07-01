@@ -3,56 +3,16 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { useAudio, Episode } from '../lib/audio-context';
-import { useSidebar } from '../lib/sidebar-context';
+import { useAudio } from '../contexts/audio-context';
+import { useSidebar } from '../contexts/sidebar-context';
+import { Episode, Podcast } from '../types';
+import { ChevronLeftIcon, ChevronRightIcon, EllipsisHorizontalIcon, PlayIcon } from '../components/ui/icons';
+import { formatDuration } from '../lib/utils/format';
 import Logo from '../lib/logo';
 
-// Simple SVG Icon Components
-const ChevronLeftIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-  </svg>
-);
 
-const ChevronRightIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-  </svg>
-);
 
-const EllipsisHorizontalIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
-  </svg>
-);
 
-const PlayIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M8 5v14l11-7z" />
-  </svg>
-);
-
-// Type for iTunes API podcast data
-type Podcast = {
-  trackId: number;
-  trackName: string;
-  artistName: string;
-  artworkUrl100?: string;
-  artworkUrl600?: string;
-  collectionName?: string;
-  primaryGenreName?: string;
-  releaseDate?: string;
-  trackCount?: number;
-}
-
-// Helper function to format duration from milliseconds
-const formatDuration = (milliseconds?: number): string => {
-  if (!milliseconds) return '0:00';
-  const totalSeconds = Math.floor(milliseconds / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-};
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');

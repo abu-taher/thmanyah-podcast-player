@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AudioProvider } from "../lib/audio-context";
-import AudioPlayer from "../lib/audio-player";
-import { SidebarProvider, SharedSidebar, HeaderNavigation } from "../lib/sidebar-context";
+import { AudioProvider } from "../contexts/audio-context";
+import AudioPlayer from "../components/audio/audio-player";
+import { SidebarProvider } from "../contexts/sidebar-context";
+import { SharedSidebar } from "../components/layout/shared-sidebar";
+import { HeaderNavigation } from "../components/layout/header-navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

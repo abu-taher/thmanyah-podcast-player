@@ -1,48 +1,17 @@
 'use client';
 
 import Image from 'next/image';
-import { useAudio } from './audio-context';
+import { useAudio } from '../../contexts/audio-context';
+import {
+  PlayIcon,
+  PauseIcon,
+  VolumeIcon,
+  VolumeOffIcon,
+  XMarkIcon,
+} from '../ui/icons';
+import { formatDuration } from '../../lib/utils/format';
 
-// Simple SVG Icon Components
-const PlayIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M8 5v14l11-7z" />
-  </svg>
-);
 
-const PauseIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-  </svg>
-);
-
-const VolumeIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M9 9v6a1 1 0 001.514.857L14 13.5V10.5l-3.486-2.357A1 1 0 009 9z" />
-  </svg>
-);
-
-const VolumeOffIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clipRule="evenodd" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
-  </svg>
-);
-
-const XMarkIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-  </svg>
-);
-
-// Helper function to format duration from milliseconds
-const formatDuration = (milliseconds?: number): string => {
-  if (!milliseconds) return '0:00';
-  const totalSeconds = Math.floor(milliseconds / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-};
 
 export default function AudioPlayer() {
   const {
@@ -263,12 +232,11 @@ export default function AudioPlayer() {
         </div>
       </div>
 
-      {/* Mobile Layout - Two Rows */}
-      <div className="md:hidden space-y-3">
-        {/* First Row: Episode Info + Basic Controls + Close Button */}
-        <div className="flex items-center space-x-3">
-          {/* Episode Info */}
-          <div className="flex items-center space-x-2 flex-1 min-w-0">
+      {/* Mobile Layout - Stacked */}
+      <div className="md:hidden">
+        {/* Episode Info Row */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center space-x-3 flex-1 min-w-0">
             <Image
               src={currentEpisode.artworkUrl600 || currentEpisode.artworkUrl100 || currentEpisode.artworkUrl60 || 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=100&h=100&fit=crop&crop=center'}
               alt={currentEpisode.trackName}
@@ -281,68 +249,64 @@ export default function AudioPlayer() {
               <p className="text-xs text-slate-400 truncate">{currentEpisode.collectionName}</p>
             </div>
           </div>
+          <button 
+            className="p-2 rounded-full hover:bg-slate-700 transition-colors flex-shrink-0 ml-2"
+            onClick={closePlayer}
+            aria-label="Close player"
+          >
+            <XMarkIcon className="w-4 h-4 text-slate-400" />
+          </button>
+        </div>
 
-          {/* Basic Controls */}
-          <div className="flex items-center space-x-2 flex-shrink-0">
+        {/* Progress Bar Row */}
+        <div className="flex items-center space-x-2 mb-3">
+          <span className="text-xs text-slate-400 w-10 text-right">
+            {Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')}
+          </span>
+          <div 
+            className="flex-1 h-1 bg-slate-600 rounded-full cursor-pointer relative"
+            onClick={handleProgressClick}
+          >
+            <div 
+              className="h-full bg-white rounded-full"
+              style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
+            />
+          </div>
+          <span className="text-xs text-slate-400 w-10">
+            {formatDuration((currentEpisode.trackTimeMillis || duration * 1000))}
+          </span>
+        </div>
+
+        {/* Controls Row */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
             <button 
-              className="p-1.5 rounded-full hover:bg-slate-700 transition-colors"
+              className="p-2 rounded-full hover:bg-slate-700 transition-colors"
               onClick={skipBackward}
             >
               <span className="text-xs text-slate-400 font-semibold">15</span>
             </button>
             <button 
-              className="p-2.5 rounded-full bg-white text-slate-800 hover:bg-slate-200 transition-colors"
+              className="p-3 rounded-full bg-white text-slate-800 hover:bg-slate-200 transition-colors"
               onClick={togglePlayPause}
             >
               {isPlaying ? (
-                <PauseIcon className="w-4 h-4" />
+                <PauseIcon className="w-6 h-6" />
               ) : (
-                <PlayIcon className="w-4 h-4" />
+                <PlayIcon className="w-6 h-6" />
               )}
             </button>
             <button 
-              className="p-1.5 rounded-full hover:bg-slate-700 transition-colors"
+              className="p-2 rounded-full hover:bg-slate-700 transition-colors"
               onClick={skipForward}
             >
               <span className="text-xs text-slate-400 font-semibold">15</span>
             </button>
-            
-            {/* Close Button */}
-            <button 
-              className="p-1.5 rounded-full hover:bg-slate-700 transition-colors"
-              onClick={closePlayer}
-              aria-label="Close player"
-            >
-              <XMarkIcon className="w-4 h-4 text-slate-400" />
-            </button>
-          </div>
-        </div>
-
-        {/* Second Row: Progress Bar + Volume/Speed */}
-        <div className="flex items-center space-x-3">
-          {/* Progress Bar */}
-          <div className="flex-1 flex items-center space-x-2">
-            <span className="text-xs text-slate-400 w-8 text-right">
-              {Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')}
-            </span>
-            <div 
-              className="flex-1 h-1 bg-slate-600 rounded-full cursor-pointer relative"
-              onClick={handleProgressClick}
-            >
-              <div 
-                className="h-full bg-white rounded-full"
-                style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
-              />
-            </div>
-            <span className="text-xs text-slate-400 w-8">
-              {formatDuration((currentEpisode.trackTimeMillis || duration * 1000))}
-            </span>
           </div>
 
-          {/* Volume and Speed */}
-          <div className="flex items-center space-x-2 flex-shrink-0">
+          <div className="flex items-center space-x-3">
             <button 
-              className="p-1.5 rounded-full hover:bg-slate-700 transition-colors"
+              className="p-2 rounded-full hover:bg-slate-700 transition-colors"
               onClick={toggleMute}
             >
               {isMuted ? (
@@ -362,25 +326,19 @@ export default function AudioPlayer() {
       </div>
 
       {/* Hidden Audio Element */}
-      <audio
+      <audio 
         ref={audioRef}
-        src={currentEpisode?.previewUrl}
-        muted={isMuted}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onPlay={handlePlay}
         onPause={handlePause}
-        onError={(e) => {
-          console.error('Audio error:', e);
-        }}
-        onLoadStart={() => {
-          console.log('Audio loading started');
-        }}
-        onCanPlay={() => {
-          console.log('Audio can start playing');
-        }}
-        preload="metadata"
-      />
+        style={{ display: 'none' }}
+      >
+        {currentEpisode?.previewUrl && (
+          <source src={currentEpisode.previewUrl} type="audio/mpeg" />
+        )}
+        Your browser does not support the audio element.
+      </audio>
     </div>
   );
 } 

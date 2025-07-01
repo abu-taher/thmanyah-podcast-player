@@ -1,48 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useRef, ReactNode } from 'react';
-
-// Type for episode data from iTunes API
-export type Episode = {
-  trackId: number;
-  trackName: string;
-  collectionName: string;
-  artistName: string;
-  artworkUrl60?: string;
-  artworkUrl100?: string;
-  artworkUrl600?: string;
-  trackTimeMillis?: number;
-  releaseDate?: string;
-  description?: string;
-  shortDescription?: string;
-  previewUrl?: string;
-  episodeUrl?: string;
-}
-
-interface AudioContextType {
-  // Audio state
-  currentEpisode: Episode | null;
-  isPlaying: boolean;
-  currentTime: number;
-  duration: number;
-  playbackRate: number;
-  isMuted: boolean;
-  audioRef: React.RefObject<HTMLAudioElement | null>;
-  
-  // Audio controls
-  setCurrentEpisode: (episode: Episode | null) => void;
-  togglePlayPause: () => void;
-  skipBackward: () => void;
-  skipForward: () => void;
-  handleTimeUpdate: () => void;
-  handleLoadedMetadata: () => void;
-  handleProgressClick: (e: React.MouseEvent<HTMLDivElement>) => void;
-  changePlaybackRate: () => void;
-  toggleMute: () => void;
-  handleEpisodeClick: (episode: Episode) => void;
-  handlePlay: () => void;
-  handlePause: () => void;
-}
+import { Episode, AudioContextType } from '../types';
 
 const AudioContext = createContext<AudioContextType | undefined>(undefined);
 
@@ -205,7 +164,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
 
 export function useAudio() {
   const context = useContext(AudioContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useAudio must be used within an AudioProvider');
   }
   return context;
