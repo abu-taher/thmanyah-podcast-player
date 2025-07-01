@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
     // Get the search term from query parameters
     const searchParams = request.nextUrl.searchParams;
     const term = searchParams.get('term');
+    const entity = searchParams.get('entity'); // Allow specifying entity type
 
     // Validate that term is provided
     if (!term) {
@@ -30,8 +31,11 @@ export async function GET(request: NextRequest) {
     // Encode the search term for URL
     const encodedTerm = encodeURIComponent(term);
     
-    // Construct iTunes Search API URL
-    const itunesUrl = `https://itunes.apple.com/search?media=podcast&term=${encodedTerm}`;
+    // Construct iTunes Search API URL with optional entity parameter
+    let itunesUrl = `https://itunes.apple.com/search?media=podcast&term=${encodedTerm}`;
+    if (entity) {
+      itunesUrl += `&entity=${entity}`;
+    }
 
     // Make request to iTunes API
     const response = await fetch(itunesUrl);
