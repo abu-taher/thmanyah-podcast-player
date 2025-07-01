@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useAudio } from '../../lib/audio-context';
 
 export default function TestPage() {
@@ -27,9 +28,11 @@ export default function TestPage() {
           {currentEpisode ? (
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
-                <img
+                <Image
                   src={currentEpisode.artworkUrl100 || currentEpisode.artworkUrl60 || 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=100&h=100&fit=crop&crop=center'}
                   alt={currentEpisode.trackName}
+                  width={64}
+                  height={64}
                   className="w-16 h-16 rounded-lg object-cover"
                 />
                 <div>

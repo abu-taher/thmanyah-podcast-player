@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useAudio } from './audio-context';
 
 // Simple SVG Icon Components
@@ -67,9 +68,11 @@ export default function AudioPlayer() {
     <div className="fixed bottom-0 left-64 right-0 bg-slate-800 border-t border-slate-700 p-4 flex items-center space-x-4 z-50">
       {/* Episode Info */}
       <div className="flex items-center space-x-3 flex-shrink-0">
-        <img
+        <Image
           src={currentEpisode.artworkUrl600 || currentEpisode.artworkUrl100 || currentEpisode.artworkUrl60 || 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=100&h=100&fit=crop&crop=center'}
           alt={currentEpisode.trackName}
+          width={48}
+          height={48}
           className="w-12 h-12 rounded-lg object-cover"
         />
         <div className="min-w-0">

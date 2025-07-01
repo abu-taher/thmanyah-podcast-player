@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useAudio, Episode } from '../lib/audio-context';
 import { useSidebar } from '../lib/sidebar-context';
 import Logo from '../lib/logo';
@@ -71,47 +72,8 @@ export default function Home() {
   // Ref for the scrollable podcast container
   const podcastScrollRef = useRef<HTMLDivElement>(null);
 
-  // Handle Enter key press in search input
-  const handleSearchKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      performSearch(searchTerm);
-    }
-  };
-
-  // Configure header on mount and when search term changes
-  useEffect(() => {
-    setHeaderConfig({
-      searchPlaceholder: "Search through over 70 million podcasts and episodes...",
-      searchValue: searchTerm,
-      onSearchChange: setSearchTerm,
-      onSearchKeyPress: handleSearchKeyPress,
-    });
-  }, [searchTerm, setHeaderConfig]);
-
-  // Function to scroll podcasts left
-  const scrollPodcastsLeft = () => {
-    if (podcastScrollRef.current) {
-      const scrollAmount = 200; // Adjust this value to control scroll distance
-      podcastScrollRef.current.scrollBy({
-        left: -scrollAmount,
-        behavior: 'smooth'
-      });
-    }
-  };
-
-  // Function to scroll podcasts right
-  const scrollPodcastsRight = () => {
-    if (podcastScrollRef.current) {
-      const scrollAmount = 200; // Adjust this value to control scroll distance
-      podcastScrollRef.current.scrollBy({
-        left: scrollAmount,
-        behavior: 'smooth'
-      });
-    }
-  };
-
   // Function to perform search using the API
-  const performSearch = async (searchQuery: string) => {
+  const performSearch = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim()) return;
     
     try {
@@ -163,19 +125,58 @@ export default function Home() {
       setLoading(false);
       setEpisodesLoading(false);
     }
+  }, []);
+
+  // Handle Enter key press in search input
+  const handleSearchKeyPress = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      performSearch(searchTerm);
+    }
+  }, [searchTerm, performSearch]);
+
+  // Configure header on mount and when search term changes
+  useEffect(() => {
+    setHeaderConfig({
+      searchPlaceholder: "Search through over 70 million podcasts and episodes...",
+      searchValue: searchTerm,
+      onSearchChange: setSearchTerm,
+      onSearchKeyPress: handleSearchKeyPress,
+    });
+  }, [searchTerm, setHeaderConfig, handleSearchKeyPress]);
+
+  // Function to scroll podcasts left
+  const scrollPodcastsLeft = () => {
+    if (podcastScrollRef.current) {
+      const scrollAmount = 200; // Adjust this value to control scroll distance
+      podcastScrollRef.current.scrollBy({
+        left: -scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Function to scroll podcasts right
+  const scrollPodcastsRight = () => {
+    if (podcastScrollRef.current) {
+      const scrollAmount = 200; // Adjust this value to control scroll distance
+      podcastScrollRef.current.scrollBy({
+        left: scrollAmount,
+        behavior: 'smooth'
+      });
+    }
   };
 
   // Fetch initial data on page load
   useEffect(() => {
     performSearch('فنجان'); // Load initial content
-  }, []);
+  }, [performSearch]);
 
   // Watch for empty search term and refetch main content
   useEffect(() => {
     if (searchTerm === '' && currentSearchTerm !== 'فنجان') {
       performSearch('فنجان');
     }
-  }, [searchTerm, currentSearchTerm]);
+  }, [searchTerm, currentSearchTerm, performSearch]);
 
   // Handle podcast click
   const handlePodcastClick = (podcast: Podcast) => {
@@ -226,9 +227,11 @@ export default function Home() {
                       style={{ width: '180px' }}
                     >
                       <div className="relative mb-3">
-                        <img
+                        <Image
                           src={podcast.artworkUrl600 || podcast.artworkUrl100 || 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=400&h=400&fit=crop&crop=center'}
                           alt={podcast.trackName}
+                          width={180}
+                          height={180}
                           className="w-full aspect-square rounded-lg object-cover"
                         />
                         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
@@ -263,9 +266,11 @@ export default function Home() {
                 {episodes.slice(0, 4).map((episode) => (
                   <div key={episode.trackId} className="group flex items-center space-x-4 p-3 rounded-lg bg-slate-800/30 hover:bg-slate-800/50 cursor-pointer transition-colors" onClick={() => handleEpisodeClick(episode)}>
                     <div className="relative">
-                      <img
+                      <Image
                         src={episode.artworkUrl600 || episode.artworkUrl100 || episode.artworkUrl60 || 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=100&h=100&fit=crop&crop=center'}
                         alt={episode.trackName}
+                        width={48}
+                        height={48}
                         className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
                       />
                       <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
@@ -299,9 +304,11 @@ export default function Home() {
                 {episodes.slice(4, 8).map((episode) => (
                   <div key={episode.trackId} className="group flex items-center space-x-4 p-3 rounded-lg bg-slate-800/30 hover:bg-slate-800/50 cursor-pointer transition-colors" onClick={() => handleEpisodeClick(episode)}>
                     <div className="relative">
-                      <img
+                      <Image
                         src={episode.artworkUrl600 || episode.artworkUrl100 || episode.artworkUrl60 || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=100&fit=crop&crop=center'}
                         alt={episode.trackName}
+                        width={48}
+                        height={48}
                         className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
                       />
                       <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
@@ -335,9 +342,11 @@ export default function Home() {
                 {episodes.slice(8, 12).map((episode) => (
                   <div key={episode.trackId} className="group flex items-center space-x-4 p-3 rounded-lg bg-slate-800/30 hover:bg-slate-800/50 cursor-pointer transition-colors" onClick={() => handleEpisodeClick(episode)}>
                     <div className="relative">
-                      <img
+                      <Image
                         src={episode.artworkUrl600 || episode.artworkUrl100 || episode.artworkUrl60 || 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&h=100&fit=crop&crop=center'}
                         alt={episode.trackName}
+                        width={48}
+                        height={48}
                         className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
                       />
                       <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">

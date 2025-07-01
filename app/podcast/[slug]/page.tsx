@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
+import Image from 'next/image';
 import { useAudio } from '../../../lib/audio-context';
 import { useSidebar } from '../../../lib/sidebar-context';
 import Logo from '../../../lib/logo';
@@ -84,7 +85,7 @@ export default function PodcastPage() {
     }
   }, [searchTerm, episodes]);
 
-  const fetchPodcastDetails = async () => {
+  const fetchPodcastDetails = useCallback(async () => {
     if (!params.slug) return;
     
     try {
@@ -119,7 +120,7 @@ export default function PodcastPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.slug]);
 
   const formatDuration = (milliseconds?: number): string => {
     if (!milliseconds) return '0:00';
@@ -146,7 +147,7 @@ export default function PodcastPage() {
 
   useEffect(() => {
     fetchPodcastDetails();
-  }, [params.slug]);
+  }, [fetchPodcastDetails]);
 
   if (loading) {
     return (
@@ -178,9 +179,11 @@ export default function PodcastPage() {
           <div className="flex flex-col lg:flex-row gap-8 mb-8">
             {/* Podcast Cover */}
             <div className="flex-shrink-0">
-              <img
+              <Image
                 src={podcast.artworkUrl600 || podcast.artworkUrl100 || ''}
                 alt={podcast.trackName}
+                width={320}
+                height={320}
                 className="w-80 h-80 rounded-2xl shadow-2xl object-cover"
               />
             </div>
@@ -226,9 +229,11 @@ export default function PodcastPage() {
                 >
                   {/* Episode Thumbnail */}
                   <div className="relative flex-shrink-0">
-                    <img
+                    <Image
                       src={episode.artworkUrl100 || episode.artworkUrl60 || podcast.artworkUrl100 || ''}
                       alt={episode.trackName}
+                      width={64}
+                      height={64}
                       className="w-16 h-16 rounded-lg object-cover"
                     />
                     <button className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
