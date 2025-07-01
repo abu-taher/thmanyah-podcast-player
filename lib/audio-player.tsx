@@ -64,7 +64,7 @@ export default function AudioPlayer() {
   }
 
   return (
-    <div className="fixed bottom-0 left-48 right-0 bg-slate-800 border-t border-slate-700 p-4 flex items-center space-x-4 z-50">
+    <div className="fixed bottom-0 left-64 right-0 bg-slate-800 border-t border-slate-700 p-4 flex items-center space-x-4 z-50">
       {/* Episode Info */}
       <div className="flex items-center space-x-3 flex-shrink-0">
         <img
