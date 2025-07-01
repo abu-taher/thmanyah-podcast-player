@@ -131,7 +131,7 @@ export function HeaderNavigation() {
       )}
 
       <div className="flex items-center space-x-3">
-        <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-sm">
+        <button className="px-4 py-2 bg-[#3ADEE6] hover:bg-[#2BC5CE] rounded-lg transition-colors text-sm text-slate-900">
           Log in
         </button>
         <button className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors text-sm">
