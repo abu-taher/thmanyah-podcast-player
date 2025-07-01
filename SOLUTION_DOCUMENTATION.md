@@ -225,6 +225,71 @@ try {
 }
 ```
 
+### 5. التحدي التقني: مشكلة CORS عند النشر على Vercel
+**المشكلة**: ظهور خطأ CORS عند نشر المشروع على Vercel
+```
+Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at https://itunes.apple.com/search?media=podcast&term=فنجان&entity=podcastEpisode. (Reason: CORS header 'Access-Control-Allow-Origin' missing). Status code: 200.
+```
+
+**السبب الجذري**: 
+المشكلة كانت في وجود استدعاءات مباشرة لـ iTunes API من جانب العميل (Client-side) في المتصفح، مما يسبب مشكلة CORS لأن iTunes API لا يسمح بالطلبات عبر المصادر المختلفة (Cross-Origin Requests).
+
+**الملف المتأثر**:
+```typescript
+// app/page.tsx - السطر 63
+// ❌ الكود المشكِل (استدعاء مباشر من العميل)
+const episodeResponse = await fetch(`https://itunes.apple.com/search?media=podcast&term=${encodeURIComponent(searchQuery)}&entity=podcastEpisode`);
+```
+
+**الحل المطبق**:
+
+#### 1. تحديث API Route للدعم معلمة entity
+```typescript
+// app/api/search/route.ts
+export async function GET(request: NextRequest) {
+  try {
+    const searchParams = request.nextUrl.searchParams;
+    const term = searchParams.get('term');
+    const entity = searchParams.get('entity'); // ✅ دعم معلمة entity
+
+    // بناء URL مع معلمة entity الاختيارية
+    let itunesUrl = `https://itunes.apple.com/search?media=podcast&term=${encodedTerm}`;
+    if (entity) {
+      itunesUrl += `&entity=${entity}`;
+    }
+
+    // الاستدعاء من الخادم (Server-side) - لا توجد مشكلة CORS
+    const response = await fetch(itunesUrl);
+    // ...
+  }
+}
+```
+
+#### 2. تحديث Client-side Code لاستخدام API الداخلي
+```typescript
+// app/page.tsx
+// ❌ الكود القديم (يسبب CORS)
+const episodeResponse = await fetch(`https://itunes.apple.com/search?media=podcast&term=${encodeURIComponent(searchQuery)}&entity=podcastEpisode`);
+
+// ✅ الكود الجديد (يتجنب CORS)
+const episodeResponse = await fetch(`/api/search?term=${encodeURIComponent(searchQuery)}&entity=podcastEpisode`);
+const episodeData = await episodeResponse.json();
+if (episodeData.success && episodeData.results) {
+  setEpisodes(episodeData.results);
+}
+```
+
+**لماذا يعمل الحل؟**
+1. **الاستدعاءات من الخادم** (Server-side API routes) لا تخضع لقيود CORS
+2. **العميل يتواصل فقط مع النطاق الخاص** بالتطبيق `/api/search`
+3. **API Route يعمل كوسيط (Proxy)** لـ iTunes API، مما يتجنب مشكلة CORS تماماً
+
+**النتيجة**: 
+- ✅ تم حل مشكلة CORS بالكامل
+- ✅ التطبيق يعمل بشكل طبيعي على Vercel
+- ✅ الحفاظ على نفس الوظائف دون تغيير تجربة المستخدم
+- ✅ تحسين الأمان بتجميع جميع استدعاءات APIs الخارجية في طبقة الخادم
+
 ## 💡 الاقتراحات للتحسين المستقبلي
 
 ### 1. تحسينات الأداء

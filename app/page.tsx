@@ -61,9 +61,9 @@ export default function Home() {
         
         // If no podcast-specific results, try a broader search for episodes
         if (episodeResults.length === 0) {
-          const episodeResponse = await fetch(`https://itunes.apple.com/search?media=podcast&term=${encodeURIComponent(searchQuery)}&entity=podcastEpisode`);
+          const episodeResponse = await fetch(`/api/search?term=${encodeURIComponent(searchQuery)}&entity=podcastEpisode`);
           const episodeData = await episodeResponse.json();
-          if (episodeData.results) {
+          if (episodeData.success && episodeData.results) {
             console.log('Episode search results:', episodeData.results.slice(0, 2)); // Log first 2 episodes to see structure
             console.log('First episode previewUrl:', episodeData.results[0]?.previewUrl);
             setEpisodes(episodeData.results);
