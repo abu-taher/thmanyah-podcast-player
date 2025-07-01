@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAudio, Episode } from '../lib/audio-context';
 import { useSidebar } from '../lib/sidebar-context';
+import Logo from '../lib/logo';
 
 // Simple SVG Icon Components
 const ChevronLeftIcon = ({ className }: { className?: string }) => (
@@ -207,7 +208,7 @@ export default function Home() {
 
           {loading ? (
             <div className="flex items-center justify-center py-20">
-              <div className="text-xl text-slate-400">Loading podcasts...</div>
+              <Logo width={64} height={70} animated={true} />
             </div>
           ) : error ? (
             <div className="flex items-center justify-center py-20">
@@ -253,7 +254,7 @@ export default function Home() {
 
           {episodesLoading ? (
             <div className="flex items-center justify-center py-20">
-              <div className="text-xl text-slate-400">Loading episodes...</div>
+              <Logo width={64} height={70} animated={true} />
             </div>
           ) : episodes.length > 0 ? (
             <div className="flex gap-6 flex-1">

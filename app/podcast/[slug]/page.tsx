@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useAudio } from '../../../lib/audio-context';
 import { useSidebar } from '../../../lib/sidebar-context';
+import Logo from '../../../lib/logo';
 
 // Simple SVG Icon Components
 const EllipsisHorizontalIcon = ({ className }: { className?: string }) => (
@@ -151,7 +152,7 @@ export default function PodcastPage() {
     return (
       <div className="flex h-screen bg-slate-900 text-white overflow-hidden">
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-xl">Loading podcast details...</div>
+          <Logo width={64} height={70} animated={true} />
         </div>
       </div>
     );
