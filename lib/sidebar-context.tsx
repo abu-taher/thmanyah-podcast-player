@@ -2,6 +2,7 @@
 
 import { createContext, useContext, ReactNode, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import Logo from './logo';
 
 // Simple SVG Icon Components
 const HomeIcon = ({ className }: { className?: string }) => (
@@ -209,9 +210,7 @@ export function SharedSidebar() {
     <div className="w-64 bg-slate-900 flex flex-col flex-shrink-0">
       {/* Logo */}
       <div className="p-4 flex items-center space-x-2">
-        <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-lg flex items-center justify-center">
-          <div className="w-4 h-4 bg-white rounded-full"></div>
-        </div>
+        <Logo />
       </div>
 
       {/* Navigation */}
