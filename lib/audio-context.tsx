@@ -40,6 +40,8 @@ interface AudioContextType {
   changePlaybackRate: () => void;
   toggleMute: () => void;
   handleEpisodeClick: (episode: Episode) => void;
+  handlePlay: () => void;
+  handlePause: () => void;
 }
 
 const AudioContext = createContext<AudioContextType | undefined>(undefined);
@@ -64,6 +66,26 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     
     setCurrentEpisode(episode);
     console.log('Selected episode:', episode.trackName);
+    
+    // Automatically start playing the episode
+    // We need to wait a bit for the audio element to update with the new source
+    setTimeout(() => {
+      if (audioRef.current && episode.previewUrl) {
+        audioRef.current.play()
+          .then(() => {
+            setIsPlaying(true);
+          })
+          .catch((error) => {
+            console.error('Error auto-playing episode:', error);
+            setIsPlaying(false);
+            
+            // Try to reload the audio if it failed
+            if (audioRef.current) {
+              audioRef.current.load();
+            }
+          });
+      }
+    }, 100); // Small delay to ensure audio source is updated
   };
 
   // Audio control functions
@@ -142,6 +164,16 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Handle audio play event
+  const handlePlay = () => {
+    setIsPlaying(true);
+  };
+
+  // Handle audio pause event
+  const handlePause = () => {
+    setIsPlaying(false);
+  };
+
   const value: AudioContextType = {
     currentEpisode,
     isPlaying,
@@ -160,6 +192,8 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     changePlaybackRate,
     toggleMute,
     handleEpisodeClick,
+    handlePlay,
+    handlePause,
   };
 
   return (

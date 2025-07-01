@@ -54,6 +54,8 @@ export default function AudioPlayer() {
     handleProgressClick,
     changePlaybackRate,
     toggleMute,
+    handlePlay,
+    handlePause,
   } = useAudio();
 
   // Don't render if no episode is selected
@@ -151,8 +153,8 @@ export default function AudioPlayer() {
         muted={isMuted}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
-        onPlay={() => {}} // Handled by context
-        onPause={() => {}} // Handled by context
+        onPlay={handlePlay}
+        onPause={handlePause}
         onError={(e) => {
           console.error('Audio error:', e);
         }}
